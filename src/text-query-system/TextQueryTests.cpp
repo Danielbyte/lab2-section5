@@ -11,6 +11,12 @@ const auto UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"s;
 const auto LOWERCASE = "abcdefghijklmnopqrstuvwxyz"s;
 const auto MIN_SIZE_FOR_QUERY = 3;
 
+//For Paragraph tests
+const auto LINE1 = "Cats are a good thing to have"s;
+const auto LINE2 = "Dogs are just on another level, Do you Agree?"s;
+const auto LINE3 = "But it all depends on ones preference"s;
+const auto LINE4 = "These lines will, make a paragraph I guess"s;
+
 // ------------- Tests for Word ----------------
 
 // Test the null case first - cannot have an empty word
@@ -109,36 +115,85 @@ TEST_CASE("Word which is not queryable cannot be found") {
    auto line = Line{"Any fool can write code that a computer can understand. Good programmers write code that humans can understand."};
    CHECK_FALSE(line.contains(Word{"a"}));
 }
-
+// Exercise 5.3
 // ------------- Tests for Paragraph ----------------
 
-//TEST_CASE("Word cannot be found in empty Paragraph") {
-//}
+TEST_CASE("Word cannot be found in empty Paragraph") {
+   auto paragraph = Paragraph{};
+   auto word = Word{"Daniel"};
+   auto[isfound, line_number] = paragraph.contains(word);
+   CHECK(vector<int>{} == line_number);
+   CHECK_FALSE(isfound);
+}
 //
-//TEST_CASE("Word not present in Paragraph cannot be found") {
-//}
+TEST_CASE("Word not present in Paragraph cannot be found") {
+auto paragraph = Paragraph{};
+paragraph.addLine(LINE1);
+paragraph.addLine(LINE2);
+paragraph.addLine(LINE3);
+paragraph.addLine(LINE4);
+
+//search a word that is not there
+auto word = Word{"Daniel"};
+auto[isfound, line_number] = paragraph.contains(word);
+CHECK(vector<int>{} == line_number);
+CHECK_FALSE(isfound);
+
+
+}
 //
-//TEST_CASE("Line number of a Word appearing once in Paragraph is returned") {
-//}
+TEST_CASE("Line number of a Word appearing once in Paragraph is returned") {
+auto paragraph = Paragraph{};
+paragraph.addLine(LINE1);
+paragraph.addLine(LINE2);
+paragraph.addLine(LINE3);
+paragraph.addLine(LINE4);
+
+auto word = Word{"Cats"};
+auto[isfound, line_number] = paragraph.contains(word);
+CHECK(vector<int>{1} == line_number);
+CHECK(isfound == true);
+}
 //
-//TEST_CASE("Line numbers of a Word appearing in multiple Lines of a Paragraph is returned") {
-//}
+TEST_CASE("Line numbers of a Word appearing in multiple Lines of a Paragraph is returned") {
+auto paragraph = Paragraph{};
+paragraph.addLine(LINE1);
+paragraph.addLine(LINE2);
+paragraph.addLine(LINE3);
+paragraph.addLine(LINE4);
+
+auto word = Word{"are"};
+auto[isfound, line_number] = paragraph.contains(word);
+CHECK(vector<int>{1,2} == line_number);
+CHECK(isfound == true);
+}
 //
-//TEST_CASE("Line numbers returned account for an empty Line") {
+TEST_CASE("Line numbers returned account for an empty Line") {
 //// If the first line of the paragraph is empty, and the word being searched for
 //// is on the second line, the vector returned should be: [2]
-//}
+auto paragraph = Paragraph{};
+auto empty_line = ""s;
+paragraph.addLine(empty_line);
+paragraph.addLine(LINE2);
+paragraph.addLine(LINE3);
+paragraph.addLine(LINE4);
+
+auto word = Word{"dogs"};
+auto[isfound, line_number] = paragraph.contains(word);
+CHECK(vector<int>{2} == line_number);
+CHECK(isfound == true);
+}
 //
 //// Integration test - both Paragraph and File Reader are tested together
-//TEST_CASE("File can be read into Paragraph and successfully searched") {
+TEST_CASE("File can be read into Paragraph and successfully searched") {
 //	// make sure that alice.txt is in the right location for this to work!
 //	// it must be in the same directory as the executable
-//	auto filereader = FileReader{"alice.txt"};
-//	auto paragraph = Paragraph{};
-//	filereader.readFileInto(paragraph);
+	auto filereader = FileReader{"alice.txt"};
+	auto paragraph = Paragraph{};
+	filereader.readFileInto(paragraph);
 //
-//	auto[found, line_numbers] = paragraph.contains(Word{"Daddy"});
+	auto[found, line_numbers] = paragraph.contains(Word{"Daddy"});
 //
-//	CHECK(found);
-//	CHECK(vector<int>{1,4,6} == line_numbers);
-//}
+	CHECK(found);
+	CHECK(vector<int>{1,4,6} == line_numbers);
+}
