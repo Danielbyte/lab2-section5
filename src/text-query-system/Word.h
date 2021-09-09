@@ -25,6 +25,7 @@ public:
 
 private:
 	string word_;
+	void remove_punctuation();
 };
 
 #endif
